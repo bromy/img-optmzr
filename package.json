@@ -4,7 +4,8 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "package": "electron-packager ./ img-optmzr --platform=win32 --arch=x64"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -17,7 +18,8 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^1.4.1"
+    "electron": "^1.4.1",
+    "electron-packager": "^8.4.0"
   },
   "dependencies": {
     "imagemin": "^5.2.2",
