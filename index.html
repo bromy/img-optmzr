@@ -30,7 +30,6 @@
     border-width: 5px;
     border-radius: 5px;
     font-size: 20px;
-    padding: 5%;
   }
 
   main {
@@ -78,13 +77,18 @@
   .drop-target {
     border: 10px dashed;
     border-radius: 10px;
-    padding: 10% 20%;
     text-align: center;
     font-size: 32px;
     color: gainsboro;
     font-weight: bold;
-    margin: 20px;
-    transition: padding .2s;
+    transition: .3s;
+    max-height: 80%;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 80%;
+    width: 300px;
   }
 
   .drop-target.is-drag-entered {

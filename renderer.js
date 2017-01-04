@@ -122,6 +122,7 @@ function handleDrop(e) {
     $$fileList.insertBefore(row, null)
 
     // maybe return optimized file size here in a callback?
+    // maybe this should be in a service worker?
     optimizeImage(droppedFiles[i].path, options.dest, row)
 
     // meh, this could be better
