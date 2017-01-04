@@ -11,12 +11,17 @@
     font-family: helvetica, arial, sans-serif;
     height: 100vh;
     margin: 0;
+    transition: opacity .2s;
   }
 
   main {
     background-color: #eee;
     flex: auto;
     overflow-y: auto;
+  }
+
+  .is-drag-over {
+    opacity: .5;
   }
 
   .container {
@@ -29,6 +34,8 @@
     border-radius: 4px;
     padding: 16px;
     margin: 0;
+    width: 100%;
+    text-align: left;
   }
 
   .file-list-item {
@@ -37,6 +44,13 @@
     display: block;
     padding: 8px;
     margin-bottom: 8px;
+  }
+
+  .file-preview {
+    height: 250px;
+    width: 250px;
+    object-fit: cover;
+    background-color: cyan;
   }
 
   .file-list-item:last-child {
@@ -59,7 +73,6 @@
   .drop-target.is-drag-entered {
     color: #ccc;
   }
-
   </style>
 </head>
 
@@ -68,15 +81,30 @@
     <h1>img-optmzr</h1>
     <input class="file-selector" multiple type="file" />
     <div class="drop-target">
-      Drop images here<br>&#129147; <!--&#129095;-->
+      Drop images here
+      <br>&#129147;
+      <!--&#129095;-->
     </div>
   </header>
   <main>
     <div class="container">
-      <ul class="file-list">
-        <li class="file-list-item">lol</li>
-        <li class="file-list-item">lol</li>
-        <li class="file-list-item">lol</li>
+      <table class="file-list">
+          <thead>
+              <tr>
+                  <th>File</th>
+                  <th>Status</th>
+                  <th>Original</th>
+                  <th>Optimized</th>
+                  <th>Savings</th>
+              </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+      </table>
+      <ul class="file-list_">
+        <li class="file-list-item_">lol</li>
+        <li class="file-list-item_">lol</li>
+        <li class="file-list-item_">lol</li>
       </ul>
     </div>
   </main>
