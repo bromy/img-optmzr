@@ -1,6 +1,7 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
+const fs = require('fs')
 const path = require('path')
 const imagemin = require('imagemin')
 const imageminMozjpeg = require('imagemin-mozjpeg')
@@ -55,7 +56,7 @@ function optimizeImage(src, dest, row) {
 
   // if no destination specified, save to /optimized folder
   if (!dest) {
-      dest = path.dirname(src) + path.sep + 'optmized'
+      dest = path.dirname(src) + path.sep + 'optimized'
   }
 
   console.log('quality',options.quality.jpeg)
@@ -75,7 +76,12 @@ function optimizeImage(src, dest, row) {
 
     let optimizedFile = files[0]
 
-    row.querySelector('.js-optimized').innerHTML = "HI"
+    fs.stat(optimizedFile.path, function updateFileListItem(err, stats) {
+      if (err) throw err
+      row.querySelector('.js-optimized').innerHTML = displaySize(stats.size)
+    })
+
+    //row.querySelector('.js-optimized').innerHTML = "HI"
 
     //=> [{data: <Buffer 89 50 4e …>, path: 'build/images/foo.jpg'}, …]
   });
