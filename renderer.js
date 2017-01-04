@@ -7,7 +7,6 @@ const imagemin = require('imagemin')
 const imageminMozjpeg = require('imagemin-mozjpeg')
 const imageminPngquant = require('imagemin-pngquant')
 
-//const $$dropTarget = document.querySelector('.drop-target')
 const $$fileList = document.querySelector('.file-list')
 
 let options = {
@@ -17,38 +16,17 @@ let options = {
   }
 }
 
+let isFirstDrop = true;
+
 document.addEventListener('dragenter', handleDragEnter)
 document.addEventListener('dragleave', handleDragLeave)
 document.addEventListener('dragover', handleDragOver)
 document.addEventListener('drop', handleDrop)
 
-console.log('v0.0.6')
-
-x = document.querySelector('.file-selector')
+console.log('v0.0.8')
 
 console.log(__dirname, path)
 
-x.addEventListener('change', (e) => {
-
-  let xPath = x.files[0].path;
-
-  console.log(e, x.files[0].path, path.dirname(xPath), path.dirname(xPath) + '\\..\\imgs-optimzed')
-
-  imagemin([xPath], path.dirname(xPath) + '\\..\\imgs-optimzed', {
-    plugins: [
-      imageminMozjpeg({
-        //quality: options.quality.jpeg
-      }),
-      imageminPngquant({
-        quality: '65-80'
-      })
-    ]
-  }).then(files => {
-    console.log('Files compressed!', files);
-    //=> [{data: <Buffer 89 50 4e …>, path: 'build/images/foo.jpg'}, …]
-  });
-
-})
 
 function optimizeImage(src, dest, row) {
 
@@ -78,6 +56,7 @@ function optimizeImage(src, dest, row) {
 
     fs.stat(optimizedFile.path, function updateFileListItem(err, stats) {
       if (err) throw err
+      row.querySelector('.js-status').innerHTML = '&#10004; Complete'
       row.querySelector('.js-optimized').innerHTML = displaySize(stats.size)
     })
 
@@ -116,31 +95,25 @@ function handleDrop(e) {
   e.preventDefault()
   e.stopPropagation()
 
-  console.log('drop', e.dataTransfer.files)
-
   const droppedFiles = e.dataTransfer.files
 
+  console.log('drop', droppedFiles)
+
   document.body.classList.remove('is-drag-over');
-  console.log('drag drop - add class')
-
-  e.dataTransfer.dropEffect = 'copy';
-
-  console.log('Number of files: ', droppedFiles.length)
 
   for (let i = 0; i < droppedFiles.length; i++) {
-
-    console.log(droppedFiles[i])
-
     let file = droppedFiles[i]
-
-    console.log($$fileList)
-
     let row = document.createElement('tr')
 
+    console.log(file)
+
     row.innerHTML =
-      `<tr>
-        <td title="${file.path}">${file.name}</td>
-        <td class="">Working</td>
+      `<tr class="file-item">
+        <td title="${file.path}">
+          <img class="file-preview" src="${file.path}">
+          <!--${file.name}-->
+        </td>
+        <td class="js-status">&#9203; Working</td>
         <td>${displaySize(file.size)}</td>
         <td class="js-optimized">{Otimized}</td>
         <td class="js-savings">{Savings}</td>
@@ -148,15 +121,15 @@ function handleDrop(e) {
 
     $$fileList.insertBefore(row, null)
 
-    // $$fileList.prepend(`<tr>
-    //   <td>${opts.file}</td>
-    //   <td class="">${opts.status}</td>
-    //   <td>${opts.original}</td>
-    //   <td>${opts.original}</td>
-    //   <td>${savings}</td>
-    // </tr>`)
-
+    // maybe return optimized file size here in a callback?
     optimizeImage(droppedFiles[i].path, options.dest, row)
+
+    // meh, this could be better
+    if (isFirstDrop) {
+      isFirstDrop = false;
+
+      document.querySelector('header').classList.add('is-collapsed')
+    }
 
   }
 
