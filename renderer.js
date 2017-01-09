@@ -12,7 +12,7 @@ const $$fileList = document.querySelector('.file-list')
 let options = {
   dest: '',
   quality: {
-    jpeg: 95
+    jpeg: 75
   }
 }
 
@@ -28,18 +28,18 @@ console.log('v0.0.8')
 console.log(__dirname, path)
 
 
-function optimizeImage(src, dest, row) {
+function optimizeImage(img, dest, row) {
 
-  console.log('optimizing an image: ', src, dest, 'ROW',row)
+  console.log('optimizing an image: ', img, dest, 'ROW',row)
 
   // if no destination specified, save to /optimized folder
   if (!dest) {
-      dest = path.dirname(src) + path.sep + 'optimized'
+      dest = path.dirname(img.path) + path.sep + 'optimized'
   }
 
   console.log('quality',options.quality.jpeg)
 
-  imagemin([src], dest, {
+  imagemin([img.path], dest, {
     plugins: [
       imageminMozjpeg({
         quality: options.quality.jpeg
@@ -58,6 +58,7 @@ function optimizeImage(src, dest, row) {
       if (err) throw err
       row.querySelector('.js-status').innerHTML = '&#10004; Complete'
       row.querySelector('.js-optimized').innerHTML = displaySize(stats.size)
+      row.querySelector('.js-savings').innerHTML = ( (img.size - stats.size) / img.size * 100 ).toFixed(1) + '%'
     })
 
     //row.querySelector('.js-optimized').innerHTML = "HI"
@@ -123,7 +124,7 @@ function handleDrop(e) {
 
     // maybe return optimized file size here in a callback?
     // maybe this should be in a service worker?
-    optimizeImage(droppedFiles[i].path, options.dest, row)
+    optimizeImage(file, options.dest, row)
 
     // meh, this could be better
     if (isFirstDrop) {
