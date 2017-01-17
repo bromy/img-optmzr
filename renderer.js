@@ -3,6 +3,7 @@
 // All of the Node.js APIs are available in this process.
 const fs = require('fs')
 const path = require('path')
+
 const imagemin = require('imagemin')
 const imageminMozjpeg = require('imagemin-mozjpeg')
 const imageminPngquant = require('imagemin-pngquant')
@@ -12,32 +13,47 @@ const $$fileList = document.querySelector('.file-list')
 let options = {
   dest: '',
   quality: {
-    jpeg: 75
+    jpeg: 80
   }
 }
+let isFirstDrop = true
+let fileQueue = []
+let activeOptimizations = 0
+let fileId = 0
 
-let isFirstDrop = true;
+setInterval(function() {
+
+  console.log(
+    'Queue: '+fileQueue.length,
+    'Active: '+activeOptimizations
+  )
+
+  if (fileQueue.length !== 0 && activeOptimizations <= 10) {
+    optimizeImage(fileQueue.shift())
+  }
+
+}, 300)
+
+// const { requireTaskPool } = require('electron-remote');
+// const work = requireTaskPool(require.resolve('./work'));
 
 document.addEventListener('dragenter', handleDragEnter)
 document.addEventListener('dragleave', handleDragLeave)
 document.addEventListener('dragover', handleDragOver)
 document.addEventListener('drop', handleDrop)
 
-console.log('v0.0.8')
+function optimizeImage(img, dest) {
 
-console.log(__dirname, path)
+  let row = document.getElementById(img.id)
 
+  row.querySelector('.js-status').textContext = 'Working'
 
-function optimizeImage(img, dest, row) {
+  activeOptimizations ++
 
-  console.log('optimizing an image: ', img, dest, 'ROW',row)
-
-  // if no destination specified, save to /optimized folder
+  // if no destination specified, overwrite same file
   if (!dest) {
-      dest = path.dirname(img.path) + path.sep + 'optimized'
+      dest = path.dirname(img.path)// + path.sep + 'optimized'
   }
-
-  console.log('quality',options.quality.jpeg)
 
   imagemin([img.path], dest, {
     plugins: [
@@ -50,8 +66,6 @@ function optimizeImage(img, dest, row) {
       // })
     ]
   }).then(files => {
-    console.log('Files compressed!', files);
-
     let optimizedFile = files[0]
 
     fs.stat(optimizedFile.path, function updateFileListItem(err, stats) {
@@ -59,11 +73,10 @@ function optimizeImage(img, dest, row) {
       row.querySelector('.js-status').innerHTML = '&#10004; Complete'
       row.querySelector('.js-optimized').innerHTML = displaySize(stats.size)
       row.querySelector('.js-savings').innerHTML = ( (img.size - stats.size) / img.size * 100 ).toFixed(1) + '%'
+
+      activeOptimizations --
     })
 
-    //row.querySelector('.js-optimized').innerHTML = "HI"
-
-    //=> [{data: <Buffer 89 50 4e …>, path: 'build/images/foo.jpg'}, …]
   });
 
 }
@@ -71,7 +84,6 @@ function optimizeImage(img, dest, row) {
 function handleDragEnter(e) {
   e.preventDefault()
   e.stopPropagation()
-  console.log('drag enter - add class')
   document.body.classList.add('is-drag-over')
   return false;
 }
@@ -80,14 +92,12 @@ function handleDragLeave(e) {
   e.preventDefault()
   e.stopPropagation()
   document.body.classList.remove('is-drag-over')
-  console.log('drag leave - remove class')
   return false;
 }
 
 function handleDragOver(e) {
   e.preventDefault()
   e.stopPropagation()
-  console.log('drag over - add class')
   document.body.classList.add('is-drag-over')
   return false;
 }
@@ -98,8 +108,6 @@ function handleDrop(e) {
 
   const droppedFiles = e.dataTransfer.files
 
-  console.log('drop', droppedFiles)
-
   document.body.classList.remove('is-drag-over');
 
   for (let i = 0; i < droppedFiles.length; i++) {
@@ -108,23 +116,36 @@ function handleDrop(e) {
 
     console.log(file)
 
+    fileId ++
+    file.id = 'f-' + fileId
+
+    row.id = file.id
+    row.className = 'file-item'
     row.innerHTML =
-      `<tr class="file-item">
-        <td title="${file.path}">
-          <img class="file-preview" src="${file.path}">
-          <!--${file.name}-->
-        </td>
-        <td class="js-status">&#9203; Working</td>
-        <td>${displaySize(file.size)}</td>
-        <td class="js-optimized">{Otimized}</td>
-        <td class="js-savings">{Savings}</td>
-      </tr>`
+     `<td title="${file.path}">
+        <img class="file-preview" src="${file.path}">
+      </td>
+      <td class="js-status">&#9203; Pending</td>
+      <td>${displaySize(file.size)}</td>
+      <td class="js-optimized"></td>
+      <td class="js-savings"></td>`
+
 
     $$fileList.insertBefore(row, null)
 
     // maybe return optimized file size here in a callback?
     // maybe this should be in a service worker?
-    optimizeImage(file, options.dest, row)
+
+    fileQueue.push(file)
+
+    //optimizeImage(file, options.dest, row)
+
+    // console.log('start work');
+    // // `work` will get executed concurrently in separate processes
+    // work(file, options).then(result => {
+    //   console.log('work done');
+    //   console.log(result);
+    // });
 
     // meh, this could be better
     if (isFirstDrop) {
@@ -139,7 +160,6 @@ function handleDrop(e) {
 }
 
 function displaySize(bytes) {
-
   var kilobytes = bytes / 1024
   var megabytes = kilobytes / 1024
   var displaySize = ''
