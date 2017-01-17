@@ -28,7 +28,7 @@ setInterval(function() {
     'Active: '+activeOptimizations
   )
 
-  if (fileQueue.length !== 0 && activeOptimizations <= 10) {
+  if (fileQueue.length !== 0 && activeOptimizations < 10) {
     optimizeImage(fileQueue.shift())
   }
 
@@ -46,7 +46,7 @@ function optimizeImage(img, dest) {
 
   let row = document.getElementById(img.id)
 
-  row.querySelector('.js-status').textContext = 'Working'
+  row.querySelector('.js-status').innerHTML = 'Working'
 
   activeOptimizations ++
 
@@ -58,7 +58,7 @@ function optimizeImage(img, dest) {
   imagemin([img.path], dest, {
     plugins: [
       imageminMozjpeg({
-        quality: options.quality.jpeg
+        quality: img.size > 150000 ? options.quality.jpeg : 95
       })
       // ,
       // imageminPngquant({
