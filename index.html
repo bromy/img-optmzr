@@ -12,18 +12,36 @@
     height: 100vh;
     margin: 0;
     transition: opacity .2s;
+    font-size: 20px;
   }
 
   header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    height: 5vh;
     transition: height .3s;
+    padding: 20px;
+    background-color: #74b1be;
+    color: #fff;
+  }
+
+  footer {
+    height: 5vh;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    background-color: #74b1be;
+    color: #fff;
+  }
+
+  .footer-note {
+    margin-right: 40px;
   }
 
   .is-collapsed {
-    height: 30vh;
+    height: 5vh;
   }
 
   .is-collapsed .drop-target {
@@ -43,7 +61,7 @@
   }
 
   .container {
-    padding: 10px;
+    padding: 20px;
   }
 
   .file-list {
@@ -94,17 +112,13 @@
   .drop-target.is-drag-entered {
     color: #ccc;
   }
+
   </style>
 </head>
 
 <body>
   <header>
-    <!--<input class="file-selector" multiple type="file" />-->
-    <div class="drop-target">
-      Drop Images
-      <br>&#129147;
-      <!--&#129095;-->
-    </div>
+    Drop images below, or anywhere really &#129147;
   </header>
   <main>
     <div class="container">
@@ -123,6 +137,11 @@
       </table>
     </div>
   </main>
+  <footer>
+    <span class="footer-note">Queue: <strong class="js-queue">0</strong></span>
+    <span class="footer-note">Images Optimized: <strong class="js-total-images-optimized">0</strong></span>
+    <span class="footer-note">Total Savings: <strong class="js-total-savings">0.00 KB</strong></span>
+  </footer>
 </body>
 <script>
 // You can also require other files to run in this process
