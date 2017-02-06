@@ -5,10 +5,10 @@ const imagemin = require('imagemin')
 const imageminMozjpeg = require('imagemin-mozjpeg')
 const imageminPngquant = require('imagemin-pngquant')
 
-const $$fileList = document.querySelector('.file-list')
-const $$queue = document.querySelector('.js-queue')
-const $$totalImagesOptimized = document.querySelector('.js-total-images-optimized')
-const $$totalSavings = document.querySelector('.js-total-savings')
+const $fileList = document.querySelector('.file-list')
+const $queue = document.querySelector('.js-queue')
+const $totalImagesOptimized = document.querySelector('.js-total-images-optimized')
+const $totalSavings = document.querySelector('.js-total-savings')
 
 let options = {
   dest: '',
@@ -17,7 +17,6 @@ let options = {
     jpeg: 80
   }
 }
-let isFirstDrop = true
 let fileQueue = []
 let activeOptimizations = 0
 let totalImagesOptimized = 0
@@ -40,9 +39,9 @@ setInterval(function() {
   }
 
   // update footer notes
-  $$queue.textContent = fileQueue.length
-  $$totalImagesOptimized.textContent = totalImagesOptimized
-  $$totalSavings.textContent = displaySize(totalSavings)
+  $queue.textContent = fileQueue.length
+  $totalImagesOptimized.textContent = totalImagesOptimized
+  $totalSavings.textContent = displaySize(totalSavings)
 
 }, 300)
 
@@ -57,7 +56,7 @@ function optimizeImage(img, dest) {
 
   // if no destination specified, overwrite same file
   if (!dest) {
-      dest = path.dirname(img.path)// + path.sep + 'optimized'
+      dest = path.dirname(img.path) // + path.sep + 'optimized'
   }
 
   imagemin([img.path], dest, {
@@ -109,7 +108,7 @@ function handleDragOver(e) {
   e.preventDefault()
   e.stopPropagation()
   document.body.classList.add('is-drag-over')
-  return false;
+  return false
 }
 
 function handleDrop(e) {
@@ -123,37 +122,24 @@ function handleDrop(e) {
   document.body.classList.remove('is-drag-over');
 
   for (let i = 0; i < droppedFiles.length; i++) {
+
     let file = droppedFiles[i]
 
     // check if file dropped is jpg
     if (path.extname(file.name).toLowerCase() === '.jpg') {
 
-      let row = document.createElement('tr')
-
       fileId ++
-      file.id = 'f-' + fileId
 
-      row.id = file.id
-      row.className = 'file-item'
-      row.innerHTML =
-       `<td title="${file.path}">
-          ${file.name}
-        </td>
-        <td class="js-status">&#9203; Pending</td>
-        <td>${displaySize(file.size)}</td>
-        <td class="js-optimized"></td>
-        <td class="js-savings"></td>`
+      file.id = 'f' + fileId
 
-      $$fileList.insertBefore(row, null)
+      insertRow(file.id, file.path, file.name, displaySize(file.size), $fileList)
 
       fileQueue.push(file)
 
-      // meh, this could be better
-      if (isFirstDrop) {
-        isFirstDrop = false;
+    } else if(file.type === '') {
 
-        //document.querySelector('header').classList.add('is-collapsed')
-      }
+      console.log('finding images in dir')
+      findImagesInDir(file.path)
 
     }
   }
@@ -161,7 +147,73 @@ function handleDrop(e) {
   return false;
 }
 
+function findImagesInDir(dirPath) {
+
+  // find all files in directory
+  fs.readdir(dirPath, (err, files) => {
+    if (err) throw err
+
+    // for each file
+    files.forEach(file => {
+
+      // check if file is really file or directory
+      fs.stat(path.join(dirPath, file), (err, stats) => {
+        if (err) throw err
+
+        // if it's a jpeg, add it to the file queue to optimize
+        if (stats.isFile()) {
+
+          console.log('found a file', file)
+
+          if (path.extname(file).toLowerCase() === '.jpg') {
+            fileId ++
+
+            // create an img object with all the data needed for optimizing
+            let img = {
+              id: 'f' + fileId,
+              path: path.join(dirPath, file),
+              size: stats.size
+            }
+
+            insertRow(img.id, img.path, file, displaySize(img.size), $fileList)
+
+            fileQueue.push(img)
+          }
+        }
+        // if it's a directory, recursively the files in it
+        else if (stats.isDirectory()) {
+
+          console.log('found a dir', file)
+
+          findImagesInDir(path.join(dirPath, file))
+
+        }
+      })
+
+    })
+  })
+}
+
+function insertRow(fileId, filePath, fileName, fileSize, fileList) {
+
+  let row = document.createElement('tr')
+
+  row.id = fileId
+  row.className = 'file-item'
+  row.innerHTML =
+   `<td title="${filePath}">
+      ${fileName}
+    </td>
+    <td class="js-status">&#9203; Pending</td>
+    <td>${fileSize}</td>
+    <td class="js-optimized"></td>
+    <td class="js-savings"></td>`
+
+  $fileList.insertBefore(row, null)
+}
+
 function displaySize(bytes) {
+
   var kilobytes = bytes / 1024
   var megabytes = kilobytes / 1024
   var displaySize = ''
