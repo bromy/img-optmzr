@@ -21,7 +21,6 @@ let fileQueue = []
 let activeOptimizations = 0
 let totalImagesOptimized = 0
 let totalSavings = 0
-let fileId = 0
 
 document.addEventListener('dragenter', handleDragEnter)
 document.addEventListener('dragleave', handleDragLeave)
@@ -128,15 +127,15 @@ function handleDrop(e) {
     // check if file dropped is jpg
     if (path.extname(file.name).toLowerCase() === '.jpg') {
 
-      fileId ++
-
-      file.id = 'f' + fileId
+      file.id = generateId()
 
       insertRow(file.id, file.path, file.name, displaySize(file.size), $fileList)
 
       fileQueue.push(file)
 
-    } else if(file.type === '') {
+    }
+
+    else if(file.type === '') {
 
       console.log('finding images in dir')
       findImagesInDir(file.path)
@@ -166,11 +165,10 @@ function findImagesInDir(dirPath) {
           console.log('found a file', file)
 
           if (path.extname(file).toLowerCase() === '.jpg') {
-            fileId ++
 
             // create an img object with all the data needed for optimizing
             let img = {
-              id: 'f' + fileId,
+              id: generateId(),
               path: path.join(dirPath, file),
               size: stats.size
             }
@@ -225,4 +223,8 @@ function displaySize(bytes) {
   }
 
   return displaySize
+}
+
+function generateId() {
+  return 'f-'+ Math.random().toString().substring(2, 9);
 }
