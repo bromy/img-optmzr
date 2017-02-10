@@ -4,136 +4,28 @@
 <head>
   <meta charset="UTF-8">
   <title>img-optmzr</title>
-  <style>
-  body {
-    display: flex;
-    flex-direction: column;
-    font-family: helvetica, arial, sans-serif;
-    height: 100vh;
-    margin: 0;
-    transition: opacity .2s;
-    font-size: 20px;
-  }
-
-  header {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 5vh;
-    transition: height .3s;
-    padding: 20px;
-    background-color: #74b1be;
-    color: #fff;
-  }
-
-  footer {
-    height: 5vh;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    background-color: #74b1be;
-    color: #fff;
-  }
-
-  .footer-note {
-    margin-right: 40px;
-  }
-
-  .is-collapsed {
-    height: 5vh;
-  }
-
-  .is-collapsed .drop-target {
-    border-width: 5px;
-    border-radius: 5px;
-    font-size: 20px;
-  }
-
-  main {
-    background-color: #eee;
-    overflow-y: auto;
-    flex: 1 1 0%;
-  }
-
-  .is-drag-over {
-    opacity: .5;
-  }
-
-  .container {
-    padding: 20px;
-  }
-
-  .file-list {
-    background-color: #fff;
-    box-shadow: 0 2px 3px rgba(0,0,0,.1);
-    padding: 16px;
-    margin: 0;
-    width: 100%;
-    text-align: left;
-  }
-
-  .file-list-item {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    display: block;
-    padding: 8px;
-    margin-bottom: 8px;
-  }
-
-  .file-preview {
-    height: 40px;
-    width: 40px;
-    object-fit: cover;
-    background-color: #c0c0c0;
-  }
-
-  .file-list-item:last-child {
-    margin-bottom: 0;
-  }
-
-  .drop-target {
-    border: 10px dashed;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 32px;
-    color: gainsboro;
-    font-weight: bold;
-    transition: .3s;
-    max-height: 80%;
-    height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 80%;
-    width: 300px;
-  }
-
-  .drop-target.is-drag-entered {
-    color: #ccc;
-  }
-
-  </style>
+  <link rel="stylesheet" href="main.css">
 </head>
 
 <body>
   <header>
-    Drop images below, or anywhere really &#129147;
+    <span class="header-note">Drop images anywhere to optimize</span>
+    <span class="open-settings-button">&#9881;</span>
   </header>
   <main>
     <div class="container">
-      <table class="file-list">
-          <thead>
-              <tr>
-                  <th>File</th>
-                  <th>Status</th>
-                  <th>Original</th>
-                  <th>Optimized</th>
-                  <th>Savings</th>
-              </tr>
-          </thead>
-          <tbody></tbody>
-          <tfoot></tfoot>
+      <table class="file-list is-transparent">
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Status</th>
+            <th>Original</th>
+            <th>Optimized</th>
+            <th>Savings</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot></tfoot>
       </table>
     </div>
   </main>
@@ -142,6 +34,24 @@
     <span class="footer-note">Images Optimized: <strong class="js-total-images-optimized">0</strong></span>
     <span class="footer-note">Total Savings: <strong class="js-total-savings">0.00 KB</strong></span>
   </footer>
+  <dialog class="settings">
+    <div class="settings-header">
+      <h1 class="settings-title">Settings</h1>
+      <div class="settings-close-button">&#10006;</div>
+    </div>
+    <h2>Destination Path</h2>
+    <p>By default, optimized files overwrite the original file. You can choose to output the optimized files to a specific folder instead.</p>
+    <label>Chose Folder</label>
+    <input class="settings-input-destination" type="file" webkitdirectory directory>
+    <h2>Quality</h2>
+    <p>While even a quality of 75 will not noticeably affect most files, you can increase the quality slider.</p>
+    <label class="settings-label-quality">75</label>
+    <input class="settings-input-quality" type="range" min="75" max="95" step="10" value="75" list="quality-slider">
+    <h2>Concurrent Optimizations</h2>
+    <p>Less powerful computers may benefit from optimizing less files at the same time.</p>
+    <label class="settings-label-concurrent-optimizations">15</label>
+    <input class="settings-input-concurrent-optimizations" type="range" min="10" max="30" step="5" value="20">
+  </dialog>
 </body>
 <script>
 // You can also require other files to run in this process

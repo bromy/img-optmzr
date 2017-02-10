@@ -9,13 +9,19 @@ const $fileList = document.querySelector('.file-list')
 const $queue = document.querySelector('.js-queue')
 const $totalImagesOptimized = document.querySelector('.js-total-images-optimized')
 const $totalSavings = document.querySelector('.js-total-savings')
+const $openSettingsButton = document.querySelector('.open-settings-button')
+const $settings = document.querySelector('.settings')
+const $settingsCloseButton = document.querySelector('.settings-close-button')
+const $settingsInputDestination = document.querySelector('.settings-input-destination')
+const $settingsInputQuality = document.querySelector('.settings-input-quality')
+const $settingsLabelQuality = document.querySelector('.settings-label-quality')
+const $settingsInputConcurrentOptimizations = document.querySelector('.settings-input-concurrent-optimizations')
+const $settingsLabelConcurrentOptimizations = document.querySelector('.settings-label-concurrent-optimizations')
 
 let options = {
   dest: '',
-  maxActiveOptimizations: 10,
-  quality: {
-    jpeg: 80
-  }
+  maxConcurrentOptimizations: 20,
+  quality: 75
 }
 let fileQueue = []
 let activeOptimizations = 0
@@ -26,6 +32,14 @@ document.addEventListener('dragenter', handleDragEnter)
 document.addEventListener('dragleave', handleDragLeave)
 document.addEventListener('dragover', handleDragOver)
 document.addEventListener('drop', handleDrop)
+document.addEventListener('drop', showFileList)
+$settingsCloseButton.addEventListener('click', closeSettings)
+$openSettingsButton.addEventListener('click', openSettings)
+$settingsCloseButton.addEventListener('click', closeSettings)
+$openSettingsButton.addEventListener('click', openSettings)
+$settingsInputDestination.addEventListener('change', handleDestinationChange)
+$settingsInputQuality.addEventListener('change', handleQualityChange)
+$settingsInputConcurrentOptimizations.addEventListener('change', handleConcurrentOptimizationsChange)
 
 // optimize images in the queue on a set interval
 setInterval(function() {
@@ -33,8 +47,8 @@ setInterval(function() {
   // if queue is not empty
   // and max concurrent optimizations have not been reached
   // optimize the next image in the queue
-  if (fileQueue.length !== 0 && activeOptimizations < options.maxActiveOptimizations) {
-    optimizeImage(fileQueue.shift())
+  if (fileQueue.length !== 0 && activeOptimizations < options.maxConcurrentOptimizations) {
+    optimizeImage(fileQueue.shift(), options.dest)
   }
 
   // update footer notes
@@ -43,6 +57,37 @@ setInterval(function() {
   $totalSavings.textContent = displaySize(totalSavings)
 
 }, 300)
+
+function handleDestinationChange(e) {
+  if (e.target.files[0]) {
+    options.dest = e.target.files[0].path
+  }
+  else {
+    options.dest = ''
+  }
+}
+
+function handleQualityChange(e) {
+  let value = e.target.value
+  $settingsLabelQuality.textContent = value
+  options.quality = value
+}
+
+function handleConcurrentOptimizationsChange(e) {
+  let value = e.target.value
+  $settingsLabelConcurrentOptimizations.textContent = e.target.value
+  options.maxConcurrentOptimizations = value
+}
+
+function openSettings() {
+  $settings.showModal()
+  $settings.classList.add('is-open')
+}
+
+function closeSettings() {
+  $settings.close()
+  $settings.classList.remove('is-open')
+}
 
 function optimizeImage(img, dest) {
 
@@ -55,13 +100,13 @@ function optimizeImage(img, dest) {
 
   // if no destination specified, overwrite same file
   if (!dest) {
-      dest = path.dirname(img.path) // + path.sep + 'optimized'
+      dest = path.dirname(img.path)
   }
 
   imagemin([img.path], dest, {
     plugins: [
       imageminMozjpeg({
-        quality: img.size > 150000 ? options.quality.jpeg : 95
+        quality: img.size > 150000 ? options.quality : 95
       })
       // ,
       // imageminPngquant({
@@ -116,8 +161,6 @@ function handleDrop(e) {
 
   const droppedFiles = e.dataTransfer.files
 
-  console.log(droppedFiles)
-
   document.body.classList.remove('is-drag-over');
 
   for (let i = 0; i < droppedFiles.length; i++) {
@@ -137,13 +180,17 @@ function handleDrop(e) {
 
     else if(file.type === '') {
 
-      console.log('finding images in dir')
       findImagesInDir(file.path)
 
     }
   }
 
   return false;
+}
+
+function showFileList() {
+  $fileList.classList.remove('is-transparent')
+  document.removeEventListener('drop', showFileList)
 }
 
 function findImagesInDir(dirPath) {
@@ -162,8 +209,6 @@ function findImagesInDir(dirPath) {
         // if it's a jpeg, add it to the file queue to optimize
         if (stats.isFile()) {
 
-          console.log('found a file', file)
-
           if (path.extname(file).toLowerCase() === '.jpg') {
 
             // create an img object with all the data needed for optimizing
@@ -180,8 +225,6 @@ function findImagesInDir(dirPath) {
         }
         // if it's a directory, recursively the files in it
         else if (stats.isDirectory()) {
-
-          console.log('found a dir', file)
 
           findImagesInDir(path.join(dirPath, file))
 
