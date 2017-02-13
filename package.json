@@ -1,27 +1,28 @@
 {
   "name": "img-optmzr",
-  "version": "0.0.1",
+  "productName": "img-optmzr",
+  "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "package": "electron-packager ./ img-optmzr --platform=win32 --arch=x64"
+    "package": "electron-packager . img-optmzr --platform=win32 --arch=x64 --ignore=\.gitignore"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "optimize",
+    "images",
+    "electron",
+    "ui"
   ],
-  "author": "GitHub",
+  "author": "bromy",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^1.4.1",
     "electron-packager": "^8.4.0"
   },
   "dependencies": {
+    "electron-remote": "^1.0.8",
     "imagemin": "^5.2.2",
     "imagemin-mozjpeg": "^6.0.0",
     "imagemin-pngquant": "^5.0.0"

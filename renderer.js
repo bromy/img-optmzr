@@ -1,9 +1,11 @@
 const fs = require('fs')
 const path = require('path')
-
 const imagemin = require('imagemin')
 const imageminMozjpeg = require('imagemin-mozjpeg')
 const imageminPngquant = require('imagemin-pngquant')
+
+
+// dom elements
 
 const $fileList = document.querySelector('.file-list')
 const $queue = document.querySelector('.js-queue')
@@ -18,6 +20,7 @@ const $settingsLabelQuality = document.querySelector('.settings-label-quality')
 const $settingsInputConcurrentOptimizations = document.querySelector('.settings-input-concurrent-optimizations')
 const $settingsLabelConcurrentOptimizations = document.querySelector('.settings-label-concurrent-optimizations')
 
+
 let options = {
   dest: '',
   maxConcurrentOptimizations: 20,
@@ -27,6 +30,8 @@ let fileQueue = []
 let activeOptimizations = 0
 let totalImagesOptimized = 0
 let totalSavings = 0
+
+// add handlers to dom elements
 
 document.addEventListener('dragenter', handleDragEnter)
 document.addEventListener('dragleave', handleDragLeave)
@@ -41,6 +46,7 @@ $settingsInputDestination.addEventListener('change', handleDestinationChange)
 $settingsInputQuality.addEventListener('change', handleQualityChange)
 $settingsInputConcurrentOptimizations.addEventListener('change', handleConcurrentOptimizationsChange)
 
+
 // optimize images in the queue on a set interval
 setInterval(function() {
 
@@ -49,45 +55,16 @@ setInterval(function() {
   // optimize the next image in the queue
   if (fileQueue.length !== 0 && activeOptimizations < options.maxConcurrentOptimizations) {
     optimizeImage(fileQueue.shift(), options.dest)
-  }
 
-  // update footer notes
-  $queue.textContent = fileQueue.length
-  $totalImagesOptimized.textContent = totalImagesOptimized
-  $totalSavings.textContent = displaySize(totalSavings)
+    // update footer notes
+    $queue.textContent = fileQueue.length
+    $totalImagesOptimized.textContent = totalImagesOptimized
+    $totalSavings.textContent = displaySize(totalSavings)
+  }
 
 }, 300)
 
-function handleDestinationChange(e) {
-  if (e.target.files[0]) {
-    options.dest = e.target.files[0].path
-  }
-  else {
-    options.dest = ''
-  }
-}
 
-function handleQualityChange(e) {
-  let value = e.target.value
-  $settingsLabelQuality.textContent = value
-  options.quality = value
-}
-
-function handleConcurrentOptimizationsChange(e) {
-  let value = e.target.value
-  $settingsLabelConcurrentOptimizations.textContent = e.target.value
-  options.maxConcurrentOptimizations = value
-}
-
-function openSettings() {
-  $settings.showModal()
-  $settings.classList.add('is-open')
-}
-
-function closeSettings() {
-  $settings.close()
-  $settings.classList.remove('is-open')
-}
 
 function optimizeImage(img, dest) {
 
@@ -108,10 +85,6 @@ function optimizeImage(img, dest) {
       imageminMozjpeg({
         quality: img.size > 150000 ? options.quality : 95
       })
-      // ,
-      // imageminPngquant({
-      //   quality: '65-80'
-      // })
     ]
   }).then(files => {
     let optimizedFile = files[0]
@@ -130,22 +103,25 @@ function optimizeImage(img, dest) {
       activeOptimizations --
     })
 
-  });
+  })
 
 }
+
+
+// handlers for drag and drop events
 
 function handleDragEnter(e) {
   e.preventDefault()
   e.stopPropagation()
   document.body.classList.add('is-drag-over')
-  return false;
+  return false
 }
 
 function handleDragLeave(e) {
   e.preventDefault()
   e.stopPropagation()
   document.body.classList.remove('is-drag-over')
-  return false;
+  return false
 }
 
 function handleDragOver(e) {
@@ -161,7 +137,7 @@ function handleDrop(e) {
 
   const droppedFiles = e.dataTransfer.files
 
-  document.body.classList.remove('is-drag-over');
+  document.body.classList.remove('is-drag-over')
 
   for (let i = 0; i < droppedFiles.length; i++) {
 
@@ -185,7 +161,7 @@ function handleDrop(e) {
     }
   }
 
-  return false;
+  return false
 }
 
 function showFileList() {
@@ -202,11 +178,11 @@ function findImagesInDir(dirPath) {
     // for each file
     files.forEach(file => {
 
-      // check if file is really file or directory
+      // check if file is file or another directory
       fs.stat(path.join(dirPath, file), (err, stats) => {
         if (err) throw err
 
-        // if it's a jpeg, add it to the file queue to optimize
+        // if it's a jpeg file, add it to the file queue to optimize
         if (stats.isFile()) {
 
           if (path.extname(file).toLowerCase() === '.jpg') {
@@ -218,12 +194,14 @@ function findImagesInDir(dirPath) {
               size: stats.size
             }
 
+            // insert a row in the file list
             insertRow(img.id, img.path, file, displaySize(img.size), $fileList)
 
+            // add the image to the queue for optimizing
             fileQueue.push(img)
           }
         }
-        // if it's a directory, recursively the files in it
+        // if it's a directory, recursively find files in it
         else if (stats.isDirectory()) {
 
           findImagesInDir(path.join(dirPath, file))
@@ -253,6 +231,42 @@ function insertRow(fileId, filePath, fileName, fileSize, fileList) {
   $fileList.insertBefore(row, null)
 }
 
+// handlers for settings menu actions
+
+function openSettings() {
+  $settings.showModal()
+  $settings.classList.add('is-open')
+}
+
+function closeSettings() {
+  $settings.close()
+  $settings.classList.remove('is-open')
+}
+
+function handleDestinationChange(e) {
+  if (e.target.files[0]) {
+    options.dest = e.target.files[0].path
+  }
+  else {
+    options.dest = ''
+  }
+}
+
+function handleQualityChange(e) {
+  let value = e.target.value
+  $settingsLabelQuality.textContent = value
+  options.quality = value
+}
+
+function handleConcurrentOptimizationsChange(e) {
+  let value = e.target.value
+  $settingsLabelConcurrentOptimizations.textContent = e.target.value
+  options.maxConcurrentOptimizations = value
+}
+
+
+// utils
+
 function displaySize(bytes) {
 
   var kilobytes = bytes / 1024
@@ -269,5 +283,5 @@ function displaySize(bytes) {
 }
 
 function generateId() {
-  return 'f-'+ Math.random().toString().substring(2, 9);
+  return 'f-'+ Math.random().toString().substring(2, 9)
 }
