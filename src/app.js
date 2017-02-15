@@ -55,12 +55,12 @@ setInterval(function() {
   // optimize the next image in the queue
   if (fileQueue.length !== 0 && activeOptimizations < options.maxConcurrentOptimizations) {
     optimizeImage(fileQueue.shift(), options.dest)
-
-    // update footer notes
-    $queue.textContent = fileQueue.length
-    $totalImagesOptimized.textContent = totalImagesOptimized
-    $totalSavings.textContent = displaySize(totalSavings)
   }
+
+  // update footer notes
+  $queue.textContent = fileQueue.length
+  $totalImagesOptimized.textContent = totalImagesOptimized
+  $totalSavings.textContent = displaySize(totalSavings)
 
 }, 300)
 
