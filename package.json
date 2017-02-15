@@ -1,29 +1,37 @@
 {
   "name": "img-optmzr",
-  "productName": "img-optmzr",
+  "author": "bromy",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
-  "main": "main.js",
+  "description": "An app for desktop image optimization",
+  "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "package": "electron-packager . img-optmzr --platform=win32 --arch=x64"
+    "package": "electron-packager . imgOptmzr --platform=win32 --arch=x64 --overwrite",
+    "pack": "build --dir",
+    "dist": "build"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/bromy/img-optmzr",
   "keywords": [
     "optimize",
     "images",
     "electron",
     "ui"
   ],
-  "author": "bromy",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^1.4.1",
+    "electron-builder": "^13.7.0",
     "electron-packager": "^8.4.0"
   },
   "dependencies": {
     "imagemin": "^5.2.2",
     "imagemin-mozjpeg": "^6.0.0",
     "imagemin-pngquant": "^5.0.0"
+  },
+  "build": {
+    "appId": "com.electron.imgoptmzr",
+    "win": {
+      "iconUrl": "https://github.com/bromy/img-optmzr/blob/master/build/icon.ico?raw=true"
+    }
   }
 }
