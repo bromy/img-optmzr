@@ -30,6 +30,7 @@
   },
   "build": {
     "appId": "com.electron.imgoptmzr",
+    "asar": false,
     "win": {
       "iconUrl": "https://github.com/bromy/img-optmzr/blob/master/build/icon.ico?raw=true"
     }
