@@ -1,40 +1,41 @@
-# electron-quick-start
+# img-optmzr
+> An app for desktop image optimization.
 
-**Clone and run for a quick way to see Electron in action.**
+![Screenshot of img-optmzr](http://bromy.co/images/img-optmzr.JPG)
 
-This is a minimal Electron application based on the [Quick Start Guide](http://electron.atom.io/docs/latest/tutorial/quick-start) within the Electron documentation.
+img-optmzr reduces the file size of JPEG images while conserving quality. It has an easy drag and drop design that's great for optimizing large amount of images. img-optmzr uses the excellent [mozjpeg](https://github.com/mozilla/mozjpeg) JPEG encoder under the hood.
 
-**Use this app along with the [Electron API Demos](http://electron.atom.io/#get-started) app for API code examples to help you get started.**
+## Development
+Clone this repo
 
-A basic Electron application needs just these files:
+`git clone https://github.com/bromy/img-optmzr.git`
 
-- `package.json` - Points to the app's main file and lists its details and dependencies.
-- `main.js` - Starts the app and creates a browser window to render HTML. This is the app's **main process**.
-- `index.html` - A web page to render. This is the app's **renderer process**.
+Install the dependencies
 
-You can learn more about each of these components within the [Quick Start Guide](http://electron.atom.io/docs/latest/tutorial/quick-start).
+`npm install`
 
-## To Use
+Start the app for local development
 
-To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
+`npm run start`
 
-```bash
-# Clone this repository
-git clone https://github.com/electron/electron-quick-start
-# Go into the repository
-cd electron-quick-start
-# Install dependencies
-npm install
-# Run the app
-npm start
-```
+Package the app as an .exe executable program
 
-Learn more about Electron and its API in the [documentation](http://electron.atom.io/docs/latest).
+`npm run package`
 
-## Other Example Apps
+## FAQ
 
-For more example apps, see the
-[list of boilerplates](http://electron.atom.io/community/#boilerplates)
-created by the awesome electron community.
+**A desktop image optimizer? Why?**
 
-#### License [CC0 1.0 (Public Domain)](LICENSE.md)
+Images can take up a lot of space. Photos taken on high-quality phone cameras are a great example. Smaller file sizes mean faster uploads, downloads, transfers, and backups. A desktop app helps optimize a lot of images - quickly.
+
+**Aren't there websites that let you optimize images online?**
+
+Yes, [Compressor.io]https://compressor.io/ and [TinyPNG](https://tinypng.com/) are two good examples. But they're less convenient when you have to optimize dozens, or even hundreds (maybe thousands?) of images. Plus, with a desktop app you don't have to download the images afterwards - they're already on your computer!
+
+**EXE? Why only for Windows?**
+
+You can still run the app in local development on macOS. But there's a great, free image optimizer available for macOS called [ImageOptim](https://imageoptim.com/mac). Try it!
+
+**No download link?**
+
+Currently don't have Windows Code Signing Certificate, so the Windows installer throws security warnings :( The easiest way to try it is to package the app as an .exe for yourself.
