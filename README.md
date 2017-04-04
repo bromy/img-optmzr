@@ -30,7 +30,7 @@ Images can take up a lot of space. Photos taken on high-quality phone cameras ar
 
 **Aren't there websites that let you optimize images online?**
 
-Yes, [Compressor.io]https://compressor.io/ and [TinyPNG](https://tinypng.com/) are two good examples. But they're less convenient when you have to optimize dozens, or even hundreds (maybe thousands?) of images. Plus, with a desktop app you don't have to download the images afterwards - they're already on your computer!
+Yes, [Compressor.io](https://compressor.io/) and [TinyPNG](https://tinypng.com/) are two good examples. But they're less convenient when you have to optimize dozens, or even hundreds (maybe thousands?) of images. Plus, with a desktop app you don't have to download the images afterwards - they're already on your computer!
 
 **EXE? Why only for Windows?**
 
