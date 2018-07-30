@@ -7,6 +7,7 @@
   "scripts": {
     "start": "electron .",
     "package": "electron-packager . imgOptmzr --platform=win32 --arch=x64 --overwrite",
+    "package-mac" : "electron-packager . imgOptmzr --platform=darwin --arch=x64 --overwrite",
     "pack": "build --dir",
     "dist": "build"
   },
