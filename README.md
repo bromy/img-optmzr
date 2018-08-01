@@ -39,3 +39,8 @@ You can still run the app in local development on macOS. But there's a great, fr
 **No download link?**
 
 Currently don't have Windows Code Signing Certificate, so the Windows installer throws security warnings :( The easiest way to try it is to package the app as an .exe for yourself.
+
+**There's nothing happening when trying to optimize images on Mac OSX**
+
+You are probably missing the libpng dylb library which is required by imagemin.
+Try running `brew install libpng`
